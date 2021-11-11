@@ -43,19 +43,13 @@ export class MembersController {
 
             const errors = validationResult(req)
             if (!errors.isEmpty()) {
-                return next(HttpError('validation error', errors.array()))
+                return res.status(422).json(errors.array())
             }
             const {first_name, last_name, email, date_of_birth} = req.body
             const created_at = momentDate
             const updated_at = momentDate
-            const candidate = await getUserByEmail(email)
-            if (candidate[0]) {
-                res.json({
-                    status: 'error',
-                    message: "email already exists"
-                })
-            }
-            await connection.query(`INSERT INTO members(first_name, last_name, email, date_of_birth, created_at, updated_at) 
+
+            await connection.query(`INSERT INTO members(first_name, last_name, email, date_of_birth, created_at, updated_at)
                                     VALUES('${first_name}','${last_name}','${email}','${date_of_birth}','${created_at}','${updated_at}')`,
                 function (error, results, fields) {
                     if (error) throw error;
